@@ -1,0 +1,22 @@
+#root {
+  min-height: 100vh;
+}
+
+.recept {
+  width: 400px;
+  height: 300px;
+  background-color: yellow;
+  margin: 10px;
+}
+
+.recept-img {
+  height: 80%;
+}
+
+.recept-container {
+  display: flex;
+}
+
+.Spinner {
+  width: auto;
+}
