@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { api } from '../api';
 import { Spinner } from '../components/Spinner';
 import { Error } from '../components/Error';
+import { Button, Text } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 
 const DEFAULT_STATE = {
   data: null,
@@ -24,7 +26,7 @@ export function RecipeDetailPage() {
   };
 
   const onFetchSuccess = ({ data }) => {
-    console.log('Data ', data);
+    // console.log('Data ', data);
     setState({
       data,
       isLoading: false,
@@ -55,6 +57,9 @@ export function RecipeDetailPage() {
       {state.isError && <Error errorMessage="Problém s načítáním dat" />}
       {state.data ? (
         <>
+          <Link to={`/updaterecipe/${slug}`}>
+            <Button>Update recipe</Button>
+          </Link>
           <div>
             Název: <p>{state.data.title}</p>
           </div>

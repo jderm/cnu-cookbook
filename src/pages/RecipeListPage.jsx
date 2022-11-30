@@ -26,7 +26,7 @@ export function RecipeListPage() {
   };
 
   const onFetchSuccess = ({ data }) => {
-    console.log(data);
+    // console.log(data);
     setState({
       data: data,
       isLoading: false,
