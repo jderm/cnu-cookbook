@@ -24,7 +24,7 @@ export function AppHeader() {
           </Flex>
         </ReactRouterLink>
       </Heading>
-      <Box mr={4}>
+      {/* <Box mr={4}>
         <HStack p={2} spacing={6}>
           <Link as={ReactRouterLink} to="/api-test">
             API TEST
@@ -33,7 +33,7 @@ export function AppHeader() {
             RECEPTY
           </Link>
         </HStack>
-      </Box>
+      </Box> */}
     </Box>
   );
 }

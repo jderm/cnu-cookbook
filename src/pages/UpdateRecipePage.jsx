@@ -237,7 +237,7 @@ export function UpdateRecipePage() {
       {state.isLoading && <Spinner />}
       {state.isError && <Error errorMessage="Problém s načítáním dat" />}
       {state.data ? (
-        <>
+        <Box m={10}>
           <Flex width={'100%'}>
             <Heading>{state.data.title}</Heading>
             <Button m={'auto'} mr={0} onClick={uploadUpdatedRecipe}>
@@ -379,7 +379,7 @@ export function UpdateRecipePage() {
               />
             </Box>
           </SimpleGrid>
-        </>
+        </Box>
       ) : null}
     </>
   );

@@ -34,7 +34,7 @@ export default function RecipeCard({
   }
 
   function upData() {
-    updateData(_id);
+    updateData('update', _id);
   }
 
   return (

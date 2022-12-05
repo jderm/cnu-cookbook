@@ -1,10 +1,19 @@
 import React from 'react';
-import { SimpleGrid, Input } from '@chakra-ui/react';
+import {
+  SimpleGrid,
+  Input,
+  Button,
+  Flex,
+  Center,
+  Box,
+  useDisclosure,
+} from '@chakra-ui/react';
 import '../css.css';
 import RecipeCard from '../components/RecipeCard';
 import { api } from '../api';
 import { Spinner } from '../components/Spinner';
 import { Error } from '../components/Error';
+import { NewRecipeModal } from '../components/NewRecipeModal';
 
 const DEFAULT_STATE = {
   data: null,
@@ -15,6 +24,7 @@ const DEFAULT_STATE = {
 export function RecipeListPage() {
   const [state, setState] = React.useState(DEFAULT_STATE);
   const [search, setSearch] = React.useState('');
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onFetchError = (error) => {
     setState({
@@ -43,14 +53,26 @@ export function RecipeListPage() {
     api.get('recipes').then(onFetchSuccess).catch(onFetchError);
   };
 
-  function updateData(receptId) {
-    const newData = state.data.filter((recept) => recept._id !== receptId);
-    setState({
-      data: newData,
-      isLoading: false,
-      isError: false,
-    });
-    console.log(newData);
+  function updateData(type, receptId, recipe) {
+    console.log('Type', type);
+    if (type === 'update') {
+      const newData = state.data.filter((recept) => recept._id !== receptId);
+      setState({
+        data: newData,
+        isLoading: false,
+        isError: false,
+      });
+      console.log(newData);
+    } else if (type === 'new') {
+      const newRecipes = [...state.data, recipe];
+      setState({
+        ...state,
+        data: {
+          ...state.data,
+          ingredients: newRecipes,
+        },
+      });
+    }
   }
 
   React.useEffect(() => {
@@ -59,11 +81,25 @@ export function RecipeListPage() {
   }, []);
 
   return (
-    <>
+    <Box m={10}>
       {state.isLoading && <Spinner />}
       {state.isError && <Error errorMessage="Problém s načítáním dat" />}
 
-      <Input value={search} onChange={(e) => setSearch(e.target.value)} />
+      <Center mb={5}>
+        <Input
+          placeholder="Vyhledej recept"
+          value={search}
+          width={'80%'}
+          size={'lg'}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </Center>
+
+      <Flex width={'100%'} mb={5}>
+        <Button m={'auto'} mr={0} onClick={onOpen} updateData={updateData}>
+          Nový recept
+        </Button>
+      </Flex>
 
       <SimpleGrid
         justifyItems={'center'}
@@ -86,6 +122,7 @@ export function RecipeListPage() {
             />
           ))}
       </SimpleGrid>
-    </>
+      {isOpen ? <NewRecipeModal isOpen={isOpen} onClose={onClose} /> : null}
+    </Box>
   );
 }
