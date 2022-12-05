@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heading, SimpleGrid, Input } from '@chakra-ui/react';
+import { SimpleGrid, Input } from '@chakra-ui/react';
 import '../css.css';
 import RecipeCard from '../components/RecipeCard';
 import { api } from '../api';
@@ -26,7 +26,7 @@ export function RecipeListPage() {
   };
 
   const onFetchSuccess = ({ data }) => {
-    // console.log(data);
+    console.log(data);
     setState({
       data: data,
       isLoading: false,
@@ -43,6 +43,16 @@ export function RecipeListPage() {
     api.get('recipes').then(onFetchSuccess).catch(onFetchError);
   };
 
+  function updateData(receptId) {
+    const newData = state.data.filter((recept) => recept._id !== receptId);
+    setState({
+      data: newData,
+      isLoading: false,
+      isError: false,
+    });
+    console.log(newData);
+  }
+
   React.useEffect(() => {
     fetchData();
     // eslint-disable-next-line
@@ -50,16 +60,13 @@ export function RecipeListPage() {
 
   return (
     <>
-      <Heading my={4} color="dodgerblue">
-        Recepty od maminky
-      </Heading>
-
       {state.isLoading && <Spinner />}
       {state.isError && <Error errorMessage="Problém s načítáním dat" />}
 
       <Input value={search} onChange={(e) => setSearch(e.target.value)} />
 
       <SimpleGrid
+        justifyItems={'center'}
         spacing={4}
         templateColumns="repeat(auto-fill, minmax(400px, 1fr))"
       >
@@ -71,7 +78,12 @@ export function RecipeListPage() {
             );
           })
           .map((item) => (
-            <RecipeCard key={item._id} item={item} />
+            <RecipeCard
+              key={item._id}
+              item={item}
+              updateData={updateData}
+              ingredients={item.ingredients}
+            />
           ))}
       </SimpleGrid>
     </>

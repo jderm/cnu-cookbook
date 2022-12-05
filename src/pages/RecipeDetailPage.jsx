@@ -3,7 +3,15 @@ import { useParams } from 'react-router-dom';
 import { api } from '../api';
 import { Spinner } from '../components/Spinner';
 import { Error } from '../components/Error';
-import { Button, Text } from '@chakra-ui/react';
+import {
+  Button,
+  Text,
+  Flex,
+  Heading,
+  OrderedList,
+  ListItem,
+  Box,
+} from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 
 const DEFAULT_STATE = {
@@ -26,7 +34,7 @@ export function RecipeDetailPage() {
   };
 
   const onFetchSuccess = ({ data }) => {
-    // console.log('Data ', data);
+    console.log('Data ', data);
     setState({
       data,
       isLoading: false,
@@ -50,31 +58,34 @@ export function RecipeDetailPage() {
     // eslint-disable-next-line
   }, []);
 
-  console.log('Params', slug);
   return (
     <>
       {state.isLoading && <Spinner />}
       {state.isError && <Error errorMessage="Problém s načítáním dat" />}
       {state.data ? (
         <>
-          <Link to={`/updaterecipe/${slug}`}>
-            <Button>Update recipe</Button>
-          </Link>
-          <div>
-            Název: <p>{state.data.title}</p>
-          </div>
-          <div>
-            Doba přípravy: <p>{state.data.preparationTime}</p>
-          </div>
-          <div>
-            Postup: <p>{state.data.directions}</p>
-          </div>
-          {/* {state.data.ingredients && <>{state.data.ingredients}</>} */}
-          {state.data.ingredients?.map((item) => (
-            <div>
-              {item.amount} {item.amountUnit} {item.name}
-            </div>
-          ))}
+          <Flex width="auto">
+            <Button m={'auto'} mr={0}>
+              <Link to={`/updaterecipe/${slug}`}>Aktualizovat recept</Link>
+            </Button>
+          </Flex>
+          <Heading mb={3}>{state.data.title}</Heading>
+
+          <Heading size={'md'}>Doba přípravy: </Heading>
+          <Text mb={5}> {state.data.preparationTime} min</Text>
+
+          <Heading size={'md'}>Postup:</Heading>
+          <Text mb={5}> {state.data.directions}</Text>
+          <OrderedList mb={5}>
+            {state.data.ingredients?.map((item) => (
+              <ListItem>
+                {item.amount}
+                {item.amountUnit} {item.name}
+              </ListItem>
+            ))}
+          </OrderedList>
+          <Heading size={'md'}>Naposledy upraveno:</Heading>
+          <Text>{state.data.lastModifiedDate}</Text>
         </>
       ) : null}
     </>

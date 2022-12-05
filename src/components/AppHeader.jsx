@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link as ReactRouterLink } from 'react-router-dom';
-import { Box, Heading, Link, HStack } from '@chakra-ui/react';
+import { Box, Heading, Link, HStack, Flex } from '@chakra-ui/react';
+import { GiKnifeFork } from 'react-icons/gi';
+import { GiSpoon } from 'react-icons/gi';
 
 export function AppHeader() {
   return (
@@ -13,8 +15,14 @@ export function AppHeader() {
       alignItems="center"
       justifyContent="space-between"
     >
-      <Heading ml={8} color="white">
-        <ReactRouterLink to="/">🍅 Cookbook 🥒</ReactRouterLink>
+      <Heading ml={8} color="white" m="auto">
+        <ReactRouterLink to="/">
+          <Flex>
+            <GiKnifeFork style={{ height: 'inherit' }} />
+            Albertovy recepty
+            <GiSpoon style={{ height: 'inherit' }} />
+          </Flex>
+        </ReactRouterLink>
       </Heading>
       <Box mr={4}>
         <HStack p={2} spacing={6}>

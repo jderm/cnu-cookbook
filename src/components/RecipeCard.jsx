@@ -10,17 +10,18 @@ import {
   Flex,
   Button,
   useDisclosure,
+  IconButton,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
-import { AiOutlineClockCircle } from 'react-icons/ai';
-import { DeleteRecordModal } from './DeleteRecordModal';
+import { AiOutlineClockCircle, AiFillDelete } from 'react-icons/ai';
+import { DeleteRecipeAlert } from './DeleteRecipeAlert';
+import { LinkBox, LinkOverlay } from '@chakra-ui/react';
 
-export default function RecipeCard({ item: { title, preparationTime, slug } }) {
+export default function RecipeCard({
+  item: { title, preparationTime, slug, _id, ingredients },
+  updateData,
+}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  let clr = 'yellow';
-  if (preparationTime >= 100) {
-    clr = 'red';
-  }
 
   let prepTime = '';
   let hours = Math.floor(preparationTime / 60);
@@ -32,39 +33,62 @@ export default function RecipeCard({ item: { title, preparationTime, slug } }) {
     prepTime = preparationTime + 'min';
   }
 
+  function upData() {
+    updateData(_id);
+  }
+
   return (
-    <Card backgroundColor={clr} width={'400px'}>
-      {/* <CardBody> */}
-      {/* <Flex> */}
-      <Link to={`/recept/${slug}`}>
-        <Image src="/images/food-placeholder.png"></Image>
-      </Link>
-
-      <CardFooter height={'100%'} width={'100%'}>
-        <Link to={`/recept/${slug}`}>
-          {/* <CardBody> */}
-          <Stack height={'100%'}>
-            <Text mb={'auto'}>{title}</Text>
-            <Flex>
-              <AiOutlineClockCircle style={{ height: 'inherit' }} />
-              <Text mt={'auto'}>{prepTime}</Text>
-            </Flex>
-          </Stack>
-          {/* </CardBody> */}
-        </Link>
-
-        <Button
-          to={`/recept/${slug}`}
-          ml={'auto'}
-          mt={'auto'}
-          mb={'auto'}
-          size={'xs'}
-          onClick={onOpen}
-        >
-          Delete
-        </Button>
-      </CardFooter>
-      {isOpen ? <DeleteRecordModal isOpen={isOpen} onClose={onClose} /> : null}
+    <Card width={'400px'}>
+      <LinkBox>
+        <LinkOverlay href={`/recept/${slug}`}>
+          <Image src="/images/food-placeholder.png"></Image>
+          <CardFooter>
+            <Stack width={'100%'}>
+              <Text
+                textOverflow={'ellipsis'}
+                whiteSpace={'nowrap'}
+                overflow={'hidden'}
+              >
+                {title}
+              </Text>
+              <Flex fontSize={'xs'}>
+                <AiOutlineClockCircle style={{ height: 'inherit' }} />
+                <Text>{prepTime}</Text>
+              </Flex>
+              <Box
+                width={'70%'}
+                fontSize={'xs'}
+                textOverflow={'ellipsis'}
+                whiteSpace={'nowrap'}
+                overflow={'hidden'}
+              >
+                {ingredients
+                  ? ingredients.map((item) => <Text>{item}</Text>)
+                  : null}
+              </Box>
+            </Stack>
+          </CardFooter>
+        </LinkOverlay>
+      </LinkBox>
+      {isOpen ? (
+        <DeleteRecipeAlert
+          isOpen={isOpen}
+          onClose={onClose}
+          receptId={_id}
+          title={title}
+          upData={upData}
+        />
+      ) : null}
+      <IconButton
+        colorScheme="red"
+        position={'absolute'}
+        top={0}
+        right={0}
+        onClick={onOpen}
+        m={'auto'}
+        mr={0}
+        icon={<AiFillDelete />}
+      />
     </Card>
   );
 }
