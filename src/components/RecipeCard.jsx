@@ -33,8 +33,9 @@ export default function RecipeCard({
     prepTime = preparationTime + 'min';
   }
 
-  function upData({ type, receptId }) {
-    updateData(type, receptId);
+  function upData(type, receptId, {}) {
+    console.log('hmm');
+    updateData(type, receptId, {});
   }
 
   return (

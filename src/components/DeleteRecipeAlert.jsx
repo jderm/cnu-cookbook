@@ -17,7 +17,7 @@ export function DeleteRecipeAlert({
   onClose,
   receptId,
   title,
-  upData,
+  updateData,
 }) {
   const cancelRef = React.useRef();
   const toast = useToast();
@@ -35,7 +35,7 @@ export function DeleteRecipeAlert({
   };
 
   const onDeleteSuccess = () => {
-    upData('delete', receptId);
+    updateData('delete', receptId, {});
     onClose();
     console.log('Succesfully deleted');
     toast({

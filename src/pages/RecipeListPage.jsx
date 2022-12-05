@@ -36,7 +36,7 @@ export function RecipeListPage() {
   };
 
   const onFetchSuccess = ({ data }) => {
-    console.log(data);
+    //console.log(data);
     setState({
       data: data,
       isLoading: false,
@@ -53,34 +53,65 @@ export function RecipeListPage() {
     api.get('recipes').then(onFetchSuccess).catch(onFetchError);
   };
 
-  function updateData({ type, receptId, recipe }) {
+  function upgvsdfvbData(type, receptId, recipe) {
+    console.log('hmmmmmmmmm');
     console.log('Type', type);
     console.log('Recipe', recipe);
-    if (type === 'update') {
-      const newData = state.data.filter((recept) => recept._id !== receptId);
-      setState({
-        data: newData,
-        isLoading: false,
-        isError: false,
-      });
-      console.log(newData);
-    } else if (type === 'new') {
-      const newRecipes = [...state.data, recipe];
-      setState({
-        ...state,
-        data: {
-          ...state.data,
-          ingredients: newRecipes,
-        },
-      });
-    } else if (type === 'delete') {
-      const newData = state.data.filter((recept) => recept._id !== receptId);
-      setState({
-        data: newData,
-        isLoading: false,
-        isError: false,
-      });
+    switch (type) {
+      case 'update':
+        const newData = state.data.filter((recept) => recept._id !== receptId);
+        setState({
+          data: newData,
+          isLoading: false,
+          isError: false,
+        });
+        break;
+
+      case 'new':
+        const newRecipes = [...state.data, recipe];
+        setState({
+          ...state,
+          data: {
+            ...state.data,
+            ingredients: newRecipes,
+          },
+        });
+        break;
+
+      case 'delete':
+        newData = state.data.filter((recept) => recept._id !== receptId);
+        setState({
+          data: newData,
+          isLoading: false,
+          isError: false,
+        });
+        break;
     }
+    // if (type === 'update') {
+    //   const newData = state.data.filter((recept) => recept._id !== receptId);
+    //   setState({
+    //     data: newData,
+    //     isLoading: false,
+    //     isError: false,
+    //   });
+    //   console.log(newData);
+    // } else if (type === 'new') {
+    //   const newRecipes = [...state.data, recipe];
+    //   setState({
+    //     ...state,
+    //     data: {
+    //       ...state.data,
+    //       ingredients: newRecipes,
+    //     },
+    //   });
+    // } else if (type === 'delete') {
+    //   const newData = state.data.filter((recept) => recept._id !== receptId);
+    //   setState({
+    //     data: newData,
+    //     isLoading: false,
+    //     isError: false,
+    //   });
+    // }
   }
 
   React.useEffect(() => {
@@ -104,7 +135,7 @@ export function RecipeListPage() {
       </Center>
 
       <Flex width={'100%'} mb={5}>
-        <Button m={'auto'} mr={0} onClick={onOpen} updateData={updateData}>
+        <Button m={'auto'} mr={0} onClick={onOpen} updateData={upgvsdfvbData}>
           Nový recept
         </Button>
       </Flex>
@@ -133,7 +164,7 @@ export function RecipeListPage() {
         <NewRecipeModal
           isOpen={isOpen}
           onClose={onClose}
-          updateData={updateData}
+          updateData={upgvsdfvbData}
         />
       ) : null}
     </Box>
