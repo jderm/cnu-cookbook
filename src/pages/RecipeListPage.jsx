@@ -53,8 +53,9 @@ export function RecipeListPage() {
     api.get('recipes').then(onFetchSuccess).catch(onFetchError);
   };
 
-  function updateData(type, receptId, recipe) {
+  function updateData({ type, receptId, recipe }) {
     console.log('Type', type);
+    console.log('Recipe', recipe);
     if (type === 'update') {
       const newData = state.data.filter((recept) => recept._id !== receptId);
       setState({
@@ -71,6 +72,13 @@ export function RecipeListPage() {
           ...state.data,
           ingredients: newRecipes,
         },
+      });
+    } else if (type === 'delete') {
+      const newData = state.data.filter((recept) => recept._id !== receptId);
+      setState({
+        data: newData,
+        isLoading: false,
+        isError: false,
       });
     }
   }
@@ -117,12 +125,17 @@ export function RecipeListPage() {
             <RecipeCard
               key={item._id}
               item={item}
-              updateData={updateData}
               ingredients={item.ingredients}
             />
           ))}
       </SimpleGrid>
-      {isOpen ? <NewRecipeModal isOpen={isOpen} onClose={onClose} /> : null}
+      {isOpen ? (
+        <NewRecipeModal
+          isOpen={isOpen}
+          onClose={onClose}
+          updateData={updateData}
+        />
+      ) : null}
     </Box>
   );
 }

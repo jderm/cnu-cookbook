@@ -35,7 +35,7 @@ export function DeleteRecipeAlert({
   };
 
   const onDeleteSuccess = () => {
-    upData();
+    upData('delete', receptId);
     onClose();
     console.log('Succesfully deleted');
     toast({

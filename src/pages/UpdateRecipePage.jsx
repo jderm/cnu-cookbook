@@ -230,7 +230,6 @@ export function UpdateRecipePage() {
     //     break;
     // }
   }
-  console.log(state.data);
 
   return (
     <>

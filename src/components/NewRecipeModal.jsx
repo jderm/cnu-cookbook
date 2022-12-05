@@ -79,6 +79,7 @@ export function NewRecipeModal({ isOpen, onClose, updateData }) {
 
     onClose();
   };
+  //updateData('new', state.data);
 
   function deleteIngredient(ingredientId) {
     const newIngredients = state.data.ingredients.filter(
@@ -112,96 +113,19 @@ export function NewRecipeModal({ isOpen, onClose, updateData }) {
   }
 
   function updateRecipe(type, value) {
-    {
-      value !== ''
-        ? setState({
-            ...state,
-            data: {
-              ...state.data,
-              [type]: value,
-            },
-          })
-        : setState(() => {
-            const copy = { ...state };
-            delete copy.data[type];
-            return copy;
-          });
-    }
-
-    // switch (type) {
-    //   case 'title':
-    //     setState({
-    //       ...state,
-    //       data: {
-    //         ...state.data,
-    //         title: value,
-    //         slug: CreateSlug(value),
-    //       },
-    //     });
-    //     break;
-
-    //   case 'preparationTime':
-    //     setState({
-    //       ...state,
-    //       data: {
-    //         ...state.data,
-    //         preparationTime: value,
-    //       },
-    //     });
-    //     break;
-
-    //   case 'sideDish':
-    //     setState({
-    //       ...state,
-    //       data: {
-    //         ...state.data,
-    //         sideDish: value,
-    //       },
-    //     });
-    //     break;
-
-    //   case 'servingCount':
-    //     setState({
-    //       ...state,
-    //       data: {
-    //         ...state.data,
-    //         servingCount: value,
-    //       },
-    //     });
-    //     break;
-
-    //   case 'directions':
-    //     {
-    //       // value !== ''
-    //       //   ? setState({
-    //       //       ...state,
-    //       //       data: {
-    //       //         ...state.data,
-    //       //         directions: value,
-    //       //       },
-    //       //     })
-    //       //   : setState({
-    //       //       ...state,
-    //       //       data: {
-    //       //         ...state.data,
-    //       //         directions: {delete state.data.directions},
-    //       //       },
-    //       //     });
-    //       setState(() => {
-    //         // 👇️ create copy of state object
-    //         let copy = { ...state };
-
-    //         // 👇️ remove salary key from object
-    //         delete copy.data['directions'];
-
-    //         return copy;
-    //       });
-    //     }
-    //     break;
-
-    //   default:
-    //     break;
-    // }
+    value !== ''
+      ? setState({
+          ...state,
+          data: {
+            ...state.data,
+            [type]: value,
+          },
+        })
+      : setState(() => {
+          const copy = { ...state };
+          delete copy.data[type];
+          return copy;
+        });
   }
 
   return (
