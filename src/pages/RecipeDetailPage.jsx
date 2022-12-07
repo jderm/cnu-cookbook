@@ -15,6 +15,7 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 
 const DEFAULT_STATE = {
   data: null,
@@ -197,7 +198,7 @@ export function RecipeDetailPage() {
               <Heading size={'md'}>Doba přípravy: </Heading>
               <Text mb={5}>{state.data.preparationTime} min</Text>
 
-              {state.data.ingredients > 0 ? (
+              {state.data.ingredients.length > 0 ? (
                 <>
                   <Heading size={'md'}>Ingredience:</Heading>
                   <OrderedList mb={5}>
@@ -222,12 +223,15 @@ export function RecipeDetailPage() {
               {state.data.directions ? (
                 <>
                   <Heading size={'md'}>Postup:</Heading>
-                  {state.data.directions.split('\n\n').map((line) => (
+                  {/* {state.data.directions.split('\n\n').map((line) => (
                     <Text whiteSpace={'pre-line'} mb={5}>
                       {' '}
                       {line}
                     </Text>
-                  ))}
+                  ))} */}
+                  <Box ml={5}>
+                    <ReactMarkdown children={state.data.directions} />
+                  </Box>
                 </>
               ) : (
                 <Text color={'red.600'}>Žádný postup</Text>

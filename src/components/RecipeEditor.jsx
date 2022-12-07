@@ -34,6 +34,8 @@ import {
 } from '@chakra-ui/react';
 
 import { AiFillDelete } from 'react-icons/ai';
+import ReactMarkdown from 'react-markdown';
+import { Link } from 'react-router-dom';
 
 export default function RecipeEditor({
   state,
@@ -193,6 +195,22 @@ export default function RecipeEditor({
               updateRecipe('directions', e.target.value);
             }}
           />
+          <Box textAlign={'right'}>
+            <Link
+              color="blue"
+              href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet"
+            >
+              Návod na Markdown
+            </Link>
+          </Box>
+        </Box>
+        <Box>
+          <Heading size={'md'} mb={3}>
+            Postup:
+          </Heading>
+          <Box ml={5}>
+            <ReactMarkdown children={state.data.directions} />
+          </Box>
         </Box>
       </SimpleGrid>
     </Box>
