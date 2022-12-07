@@ -21,7 +21,6 @@ export function DeleteRecipeAlert({
 }) {
   const cancelRef = React.useRef();
   const toast = useToast();
-  console.log(receptId);
 
   const onDeleteError = (error) => {
     console.log('Some error appeared', error);
@@ -35,7 +34,7 @@ export function DeleteRecipeAlert({
   };
 
   const onDeleteSuccess = () => {
-    updateData('delete', receptId, {});
+    updateData({ type: 'delete', receptId: receptId });
     onClose();
     console.log('Succesfully deleted');
     toast({
@@ -47,12 +46,12 @@ export function DeleteRecipeAlert({
     });
   };
 
-  function deleteRecord() {
+  const deleteRecord = () => {
     api
       .delete(`recipes/${receptId}`)
       .then(onDeleteSuccess)
       .catch(onDeleteError);
-  }
+  };
   return (
     <>
       <AlertDialog

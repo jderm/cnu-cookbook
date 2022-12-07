@@ -60,98 +60,125 @@ export function RecipeDetailPage() {
     // eslint-disable-next-line
   }, []);
 
-  function updateRecipe(type, value) {
-    {
-      value !== ''
-        ? setState({
-            ...state,
-            data: {
-              ...state.data,
-              [type]: value,
-            },
-          })
-        : setState(() => {
-            const copy = { ...state };
-            delete copy.data[type];
-            return copy;
-          });
+  const formatDate = (isoDate) => {
+    const date = isoDate.split('T');
+    const date2 = date[0].split('-');
+    let newDate = '';
+    for (let a = 2; a >= 0; a--) {
+      if (a != 0) {
+        newDate += date2[a] + '. ';
+      } else {
+        newDate += date2[a];
+      }
     }
+    return newDate;
+  };
 
-    // switch (type) {
-    //   case 'title':
-    //     setState({
-    //       ...state,
-    //       data: {
-    //         ...state.data,
-    //         title: value,
-    //         slug: CreateSlug(value),
-    //       },
-    //     });
-    //     break;
+  // function updateRecipe(type, value) {
+  //   {
+  //     value !== ''
+  //       ? setState({
+  //           ...state,
+  //           data: {
+  //             ...state.data,
+  //             [type]: value,
+  //           },
+  //         })
+  //       : setState(() => {
+  //           const copy = { ...state };
+  //           delete copy.data[type];
+  //           return copy;
+  //         });
+  //   }
 
-    //   case 'preparationTime':
-    //     setState({
-    //       ...state,
-    //       data: {
-    //         ...state.data,
-    //         preparationTime: value,
-    //       },
-    //     });
-    //     break;
+  //   // switch (type) {
+  //   //   case 'title':
+  //   //     setState({
+  //   //       ...state,
+  //   //       data: {
+  //   //         ...state.data,
+  //   //         title: value,
+  //   //         slug: CreateSlug(value),
+  //   //       },
+  //   //     });
+  //   //     break;
 
-    //   case 'sideDish':
-    //     setState({
-    //       ...state,
-    //       data: {
-    //         ...state.data,
-    //         sideDish: value,
-    //       },
-    //     });
-    //     break;
+  //   //   case 'preparationTime':
+  //   //     setState({
+  //   //       ...state,
+  //   //       data: {
+  //   //         ...state.data,
+  //   //         preparationTime: value,
+  //   //       },
+  //   //     });
+  //   //     break;
 
-    //   case 'servingCount':
-    //     setState({
-    //       ...state,
-    //       data: {
-    //         ...state.data,
-    //         servingCount: value,
-    //       },
-    //     });
-    //     break;
+  //   //   case 'sideDish':
+  //   //     setState({
+  //   //       ...state,
+  //   //       data: {
+  //   //         ...state.data,
+  //   //         sideDish: value,
+  //   //       },
+  //   //     });
+  //   //     break;
 
-    //   case 'directions':
-    //     {
-    //       // value !== ''
-    //       //   ? setState({
-    //       //       ...state,
-    //       //       data: {
-    //       //         ...state.data,
-    //       //         directions: value,
-    //       //       },
-    //       //     })
-    //       //   : setState({
-    //       //       ...state,
-    //       //       data: {
-    //       //         ...state.data,
-    //       //         directions: {delete state.data.directions},
-    //       //       },
-    //       //     });
-    //       setState(() => {
-    //         // 👇️ create copy of state object
-    //         let copy = { ...state };
+  //   //   case 'servingCount':
+  //   //     setState({
+  //   //       ...state,
+  //   //       data: {
+  //   //         ...state.data,
+  //   //         servingCount: value,
+  //   //       },
+  //   //     });
+  //   //     break;
 
-    //         // 👇️ remove salary key from object
-    //         delete copy.data['directions'];
+  //   //   case 'directions':
+  //   //     {
+  //   //       // value !== ''
+  //   //       //   ? setState({
+  //   //       //       ...state,
+  //   //       //       data: {
+  //   //       //         ...state.data,
+  //   //       //         directions: value,
+  //   //       //       },
+  //   //       //     })
+  //   //       //   : setState({
+  //   //       //       ...state,
+  //   //       //       data: {
+  //   //       //         ...state.data,
+  //   //       //         directions: {delete state.data.directions},
+  //   //       //       },
+  //   //       //     });
+  //   //       setState(() => {
+  //   //         // 👇️ create copy of state object
+  //   //         let copy = { ...state };
 
-    //         return copy;
-    //       });
-    //     }
-    //     break;
+  //   //         // 👇️ remove salary key from object
+  //   //         delete copy.data['directions'];
 
-    //   default:
-    //     break;
+  //   //         return copy;
+  //   //       });
+  //   //     }
+  //   //     break;
+
+  //   //   default:
+  //   //     break;
+  //   // }
+  // }
+
+  const formatTime = () => {
+    //let prepTime = '';
+    let hours = Math.floor(state.data.preparationTime / 60);
+    if (hours > 0) {
+      let minutes = state.data.preparationTime - 60 * hours;
+      let minutesText = minutes > 0 ? '& ' + minutes + 'min' : '';
+      return hours + 'h ' + minutesText;
+    }
+    // else {
+    //   return state.data.preparationTime + 'min';
     // }
-  }
+  };
 
   return (
     <>
@@ -160,31 +187,51 @@ export function RecipeDetailPage() {
       {state.data ? (
         <Box m={10}>
           <Flex width="auto">
-            <Button m={'auto'} mr={0}>
+            <Button m={'auto'} mr={0} size={'lg'}>
               <Link to={`/updaterecipe/${slug}`}>Aktualizovat recept</Link>
             </Button>
           </Flex>
           <Heading mb={7}>{state.data.title}</Heading>
-          <SimpleGrid minChildWidth="400px" gap={2} ml={5} mr={5}>
+          <SimpleGrid minChildWidth="400px" gap={2}>
             <Box>
               <Heading size={'md'}>Doba přípravy: </Heading>
-              <Text mb={5}> {state.data.preparationTime} min</Text>
+              <Text mb={5}>{state.data.preparationTime} min</Text>
 
-              <Heading size={'md'}>Ingredience:</Heading>
-              <OrderedList mb={5}>
-                {state.data.ingredients?.map((item) => (
-                  <ListItem>
-                    {item.amount}
-                    {item.amountUnit} {item.name}
-                  </ListItem>
-                ))}
-              </OrderedList>
+              {state.data.ingredients > 0 ? (
+                <>
+                  <Heading size={'md'}>Ingredience:</Heading>
+                  <OrderedList mb={5}>
+                    {state.data.ingredients?.map((item) => (
+                      <ListItem>
+                        {item.amount}
+                        {item.amountUnit} {item.name}
+                      </ListItem>
+                    ))}
+                  </OrderedList>
+                </>
+              ) : (
+                <Text color={'red.600'} mb={5}>
+                  Žádné ingredience
+                </Text>
+              )}
+
               <Heading size={'md'}>Naposledy upraveno:</Heading>
-              <Text>{state.data.lastModifiedDate}</Text>
+              <Text>{formatDate(state.data.lastModifiedDate)}</Text>
             </Box>
             <Box>
-              <Heading size={'md'}>Postup:</Heading>
-              <Text mb={5}> {state.data.directions}</Text>
+              {state.data.directions ? (
+                <>
+                  <Heading size={'md'}>Postup:</Heading>
+                  {state.data.directions.split('\n\n').map((line) => (
+                    <Text whiteSpace={'pre-line'} mb={5}>
+                      {' '}
+                      {line}
+                    </Text>
+                  ))}
+                </>
+              ) : (
+                <Text color={'red.600'}>Žádný postup</Text>
+              )}
             </Box>
           </SimpleGrid>
         </Box>

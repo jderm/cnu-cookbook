@@ -27,6 +27,7 @@ import { api } from '../api';
 import { Spinner } from '../components/Spinner';
 import { Error } from '../components/Error';
 import { AiFillDelete } from 'react-icons/ai';
+import RecipeEditor from '../components/RecipeEditor';
 
 const DEFAULT_STATE = {
   data: null,
@@ -43,13 +44,6 @@ export function UpdateRecipePage() {
     amount: 1,
     amountUnit: '',
   });
-
-  function uploadUpdatedRecipe() {
-    api
-      .post(`recipes/${state.data._id}`, state.data)
-      .then(onUploadSuccess)
-      .catch(onUploadError);
-  }
 
   const onUploadError = (error) => {
     console.log('Error with uploading', error);
@@ -72,37 +66,6 @@ export function UpdateRecipePage() {
       duration: 3000,
     });
   };
-
-  function deleteIngredient(ingredientId) {
-    const newIngredients = state.data.ingredients.filter(
-      (ingredient) => ingredient._id !== ingredientId,
-    );
-    setState({
-      ...state,
-      data: {
-        ...state.data,
-        ingredients: newIngredients,
-      },
-    });
-  }
-
-  function addNewIngredient() {
-    const newIngredients = [...state.data.ingredients, newIngredient];
-    setState({
-      ...state,
-      data: {
-        ...state.data,
-        ingredients: newIngredients,
-      },
-    });
-  }
-
-  function newIngredientUpdate(type, value) {
-    setNewIngredient({
-      ...newIngredient,
-      [type]: value,
-    });
-  }
 
   const onFetchError = (error) => {
     setState({
@@ -137,6 +100,13 @@ export function UpdateRecipePage() {
     fetchData();
     // eslint-disable-next-line
   }, []);
+
+  function uploadUpdatedRecipe() {
+    api
+      .post(`recipes/${state.data._id}`, state.data)
+      .then(onUploadSuccess)
+      .catch(onUploadError);
+  }
 
   function updateRecipe(type, value) {
     {
@@ -231,19 +201,65 @@ export function UpdateRecipePage() {
     // }
   }
 
+  function deleteIngredient(ingredientId) {
+    const newIngredients = state.data.ingredients.filter(
+      (ingredient) => ingredient._id !== ingredientId,
+    );
+    setState({
+      ...state,
+      data: {
+        ...state.data,
+        ingredients: newIngredients,
+      },
+    });
+  }
+
+  function addNewIngredient() {
+    const newIngredients = [...state.data.ingredients, newIngredient];
+    setState({
+      ...state,
+      data: {
+        ...state.data,
+        ingredients: newIngredients,
+      },
+    });
+  }
+
+  function newIngredientUpdate(type, value) {
+    setNewIngredient({
+      ...newIngredient,
+      [type]: value,
+    });
+  }
+
   return (
     <>
       {state.isLoading && <Spinner />}
       {state.isError && <Error errorMessage="Problém s načítáním dat" />}
       {state.data ? (
-        <Box m={10}>
-          <Flex width={'100%'}>
-            <Heading>{state.data.title}</Heading>
-            <Button m={'auto'} mr={0} onClick={uploadUpdatedRecipe}>
-              Aktualizovat recept
-            </Button>
-          </Flex>
-          <SimpleGrid minChildWidth="400px" gap={10} ml={3} mr={3}>
+        <Box m={5}>
+          <Box>
+            <Flex width={'100%'}>
+              <Button
+                size={'lg'}
+                m={'auto'}
+                mr={0}
+                onClick={uploadUpdatedRecipe}
+              >
+                Aktualizovat recept
+              </Button>
+            </Flex>
+          </Box>
+          {/* <Heading>{state.data.title}</Heading> */}
+          <RecipeEditor
+            state={state}
+            newIngredient={newIngredient}
+            updateRecipe={updateRecipe}
+            deleteIngredient={deleteIngredient}
+            addNewIngredient={addNewIngredient}
+            newIngredientUpdate={newIngredientUpdate}
+          />
+          {/* <SimpleGrid minChildWidth="400px" gap={10} ml={3} mr={3}>
             <Box>
               <Heading size={'sm'}>Název:</Heading>
               <Input
@@ -313,10 +329,9 @@ export function UpdateRecipePage() {
                         <Tr>
                           <Td>
                             {item.amount} {item.amountUnit}
-                          </Td>{' '}
+                          </Td>
                           <Td>{item.name}</Td>
                           <Td>
-                            {' '}
                             <IconButton
                               colorScheme="red"
                               onClick={() => deleteIngredient(item._id)}
@@ -366,7 +381,6 @@ export function UpdateRecipePage() {
                 Přidat ingredienci
               </Button>
             </Box>
-
             <Box>
               <Heading size={'sm'}>Postup:</Heading>
               <Textarea
@@ -377,7 +391,7 @@ export function UpdateRecipePage() {
                 }}
               />
             </Box>
-          </SimpleGrid>
+          </SimpleGrid> */}
         </Box>
       ) : null}
     </>

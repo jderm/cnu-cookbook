@@ -23,20 +23,17 @@ export default function RecipeCard({
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  let prepTime = '';
-  let hours = Math.floor(preparationTime / 60);
-  if (hours > 0) {
-    let minutes = preparationTime - 60 * hours;
-    let minutesText = minutes > 0 ? '& ' + minutes + 'min' : '';
-    prepTime = hours + 'h ' + minutesText;
-  } else {
-    prepTime = preparationTime + 'min';
-  }
-
-  function upData(type, receptId, {}) {
-    console.log('hmm');
-    updateData(type, receptId, {});
-  }
+  const formatTime = () => {
+    //let prepTime = '';
+    let hours = Math.floor(preparationTime / 60);
+    if (hours > 0) {
+      let minutes = preparationTime - 60 * hours;
+      let minutesText = minutes > 0 ? '& ' + minutes + 'min' : '';
+      return hours + 'h ' + minutesText;
+    } else {
+      return preparationTime + 'min';
+    }
+  };
 
   return (
     <Card width={'400px'}>
@@ -54,7 +51,7 @@ export default function RecipeCard({
               </Text>
               <Flex fontSize={'xs'}>
                 <AiOutlineClockCircle style={{ height: 'inherit' }} />
-                <Text>{prepTime}</Text>
+                <Text>{formatTime()}</Text>
               </Flex>
               <Box
                 width={'70%'}
@@ -77,7 +74,7 @@ export default function RecipeCard({
           onClose={onClose}
           receptId={_id}
           title={title}
-          upData={upData}
+          updateData={updateData}
         />
       ) : null}
       <IconButton

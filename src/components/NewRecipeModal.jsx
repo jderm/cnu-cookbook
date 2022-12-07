@@ -37,8 +37,15 @@ import { AiFillDelete } from 'react-icons/ai';
 
 import { api } from '../api';
 
+import RecipeEditor from '../components/RecipeEditor';
+
 const DEFAULT_STATE = {
-  data: { title: '', preparationTime: 1, servingCount: 0, ingredients: [] },
+  data: {
+    title: 'Jméno',
+    preparationTime: 1,
+    servingCount: 0,
+    ingredients: [],
+  },
   isLoading: false,
   isError: false,
 };
@@ -51,9 +58,6 @@ export function NewRecipeModal({ isOpen, onClose, updateData }) {
     amount: 1,
     amountUnit: '',
   });
-  function uploadRecipe() {
-    api.post('recipes', state.data).then(onUploadSuccess).catch(onUploadError);
-  }
 
   const onUploadError = (error) => {
     console.log('Error with creating', error);
@@ -67,7 +71,7 @@ export function NewRecipeModal({ isOpen, onClose, updateData }) {
   };
 
   const onUploadSuccess = () => {
-    updateData('new', state.data);
+    updateData({ type: 'new', recipe: state.data });
     console.log('Created successfully');
     toast({
       title: `Created successfully`,
@@ -79,7 +83,26 @@ export function NewRecipeModal({ isOpen, onClose, updateData }) {
 
     onClose();
   };
-  //updateData('new', state.data);
+
+  function uploadRecipe() {
+    api.post('recipes', state.data).then(onUploadSuccess).catch(onUploadError);
+  }
+
+  const updateRecipe = (type, value) => {
+    value !== ''
+      ? setState({
+          ...state,
+          data: {
+            ...state.data,
+            [type]: value,
+          },
+        })
+      : setState(() => {
+          const copy = { ...state };
+          delete copy.data[type];
+          return copy;
+        });
+  };
 
   function deleteIngredient(ingredientId) {
     const newIngredients = state.data.ingredients.filter(
@@ -94,7 +117,7 @@ export function NewRecipeModal({ isOpen, onClose, updateData }) {
     });
   }
 
-  function addNewIngredient() {
+  const addNewIngredient = () => {
     const newIngredients = [...state.data.ingredients, newIngredient];
     setState({
       ...state,
@@ -103,54 +126,36 @@ export function NewRecipeModal({ isOpen, onClose, updateData }) {
         ingredients: newIngredients,
       },
     });
-  }
+  };
 
-  function newIngredientUpdate(type, value) {
+  const newIngredientUpdate = (type, value) => {
     setNewIngredient({
       ...newIngredient,
       [type]: value,
     });
-  }
-
-  function updateRecipe(type, value) {
-    value !== ''
-      ? setState({
-          ...state,
-          data: {
-            ...state.data,
-            [type]: value,
-          },
-        })
-      : setState(() => {
-          const copy = { ...state };
-          delete copy.data[type];
-          return copy;
-        });
-  }
+  };
 
   return (
     <div>
-      <Modal onClose={onClose} isOpen={isOpen} isCentered size={'5x1'}>
+      <Modal onClose={onClose} isOpen={isOpen} size={'2x1'}>
         <ModalOverlay />
         <ModalContent pt={5}>
-          {/* <ModalHeader>Modal Title</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text>fasdfasfasfas</Text>
-          </ModalBody> */}
+          <RecipeEditor
+            state={state}
+            newIngredient={newIngredient}
+            updateRecipe={updateRecipe}
+            deleteIngredient={deleteIngredient}
+            addNewIngredient={addNewIngredient}
+            newIngredientUpdate={newIngredientUpdate}
+          />
           <Box m={5}>
-            {/* <Flex width={'100%'}>
-              <Heading>{state.data.title ? state.data.title : ''}</Heading>
-              <Button m={'auto'} mr={0} onClick={uploadUpdatedRecipe}>
-                Aktualizovat recept
-              </Button>
-            </Flex> */}
-            <Heading>{state.data.title}</Heading>
+            {/* <Heading>{state.data.title}</Heading> */}
+            {/* 
             <SimpleGrid minChildWidth="400px" gap={10} ml={3} mr={3}>
               <Box>
                 <Heading size={'sm'}>Název:</Heading>
                 <Input
-                  value={state.data.title ? state.data.title : ''}
+                  value={state.data.title ? state.data.title : 'Jméno'}
                   mb={10}
                   onChange={(e) => {
                     updateRecipe('title', e.target.value);
@@ -216,10 +221,9 @@ export function NewRecipeModal({ isOpen, onClose, updateData }) {
                           <Tr>
                             <Td>
                               {item.amount} {item.amountUnit}
-                            </Td>{' '}
+                            </Td>
                             <Td>{item.name}</Td>
                             <Td>
-                              {' '}
                               <IconButton
                                 colorScheme="red"
                                 onClick={() => deleteIngredient(item._id)}
@@ -269,7 +273,6 @@ export function NewRecipeModal({ isOpen, onClose, updateData }) {
                   Přidat ingredienci
                 </Button>
               </Box>
-
               <Box>
                 <Heading size={'sm'}>Postup:</Heading>
                 <Textarea
@@ -280,7 +283,7 @@ export function NewRecipeModal({ isOpen, onClose, updateData }) {
                   }}
                 />
               </Box>
-            </SimpleGrid>
+            </SimpleGrid> */}
           </Box>
           <ModalFooter>
             <Button onClick={onClose} mr={'5'}>
