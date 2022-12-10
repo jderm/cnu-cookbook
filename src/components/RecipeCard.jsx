@@ -11,6 +11,7 @@ import {
   Button,
   useDisclosure,
   IconButton,
+  Heading,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import { AiOutlineClockCircle, AiFillDelete } from 'react-icons/ai';
@@ -46,6 +47,7 @@ export default function RecipeCard({
                 textOverflow={'ellipsis'}
                 whiteSpace={'nowrap'}
                 overflow={'hidden'}
+                fontSize="md"
               >
                 {title}
               </Text>
@@ -79,12 +81,13 @@ export default function RecipeCard({
       ) : null}
       <IconButton
         colorScheme="red"
+        size={'sm'}
         position={'absolute'}
         top={0}
         right={0}
         onClick={onOpen}
-        m={'auto'}
-        mr={0}
+        // m={'auto'}
+        // mr={0}
         icon={<AiFillDelete />}
       />
     </Card>

@@ -9,12 +9,16 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import '../css.css';
+//import '../css.css';
 import RecipeCard from '../components/RecipeCard';
 import { api } from '../api';
 import { Spinner } from '../components/Spinner';
 import { Error } from '../components/Error';
 import { NewRecipeModal } from '../components/NewRecipeModal';
+import { useSelector } from 'react-redux';
+import { selectData } from '../redux/dataReducer';
+import { useDispatch } from 'react-redux';
+import { onLoadData } from '../redux/dataReducer';
 
 const DEFAULT_STATE = {
   data: null,
@@ -27,6 +31,9 @@ export function RecipeListPage() {
   const [search, setSearch] = React.useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
+
+  const list = useSelector(selectData);
+  const dispatch = useDispatch();
 
   const onFetchError = (error) => {
     setState({
@@ -41,16 +48,18 @@ export function RecipeListPage() {
       status: 'error',
       duration: 3000,
     });
-    console.log('Some error appeared', error);
+    console.log('Some error appeared', error.type);
   };
 
   const onFetchSuccess = ({ data }) => {
-    //console.log(data);
+    //console.log('Fetch data', data);
     setState({
       data: data,
       isLoading: false,
       isError: false,
     });
+    dispatch(onLoadData(data));
+    //console.log(list);
   };
 
   const fetchData = () => {
@@ -63,13 +72,11 @@ export function RecipeListPage() {
   };
 
   const updateData = ({ type, receptId, recipe }) => {
-    // console.log('hmmmmmmmmm');
-    // console.log('Type', type);
-    // console.log('Recipe', recipe);
-    console.log(type, receptId, recipe);
+    //console.log(type, receptId, recipe);
     switch (type) {
       case 'update':
         fetchData();
+
         // const updatedData = state.data.filter(
         //   (recept) => recept._id !== receptId,
         // );
@@ -83,7 +90,9 @@ export function RecipeListPage() {
       case 'new':
         fetchData();
         // console.log(recipe);
+        // console.log(recipe);
         // const newRecipe = [...state.data, recipe];
+        // console.log(newRecipe);
         // setState({
         //   ...state,
         //   data: {
@@ -95,40 +104,15 @@ export function RecipeListPage() {
         break;
 
       case 'delete':
-        fetchData();
-        // const newData = state.data.filter((recept) => recept._id !== receptId);
-        // setState({
-        //   data: newData,
-        //   isLoading: false,
-        //   isError: false,
-        // });
+        // fetchData();
+        const newData = state.data.filter((recept) => recept._id !== receptId);
+        setState({
+          data: newData,
+          isLoading: false,
+          isError: false,
+        });
         break;
     }
-    // if (type === 'update') {
-    //   const newData = state.data.filter((recept) => recept._id !== receptId);
-    //   setState({
-    //     data: newData,
-    //     isLoading: false,
-    //     isError: false,
-    //   });
-    //   console.log(newData);
-    // } else if (type === 'new') {
-    //   const newRecipes = [...state.data, recipe];
-    //   setState({
-    //     ...state,
-    //     data: {
-    //       ...state.data,
-    //       ingredients: newRecipes,
-    //     },
-    //   });
-    // } else if (type === 'delete') {
-    //   const newData = state.data.filter((recept) => recept._id !== receptId);
-    //   setState({
-    //     data: newData,
-    //     isLoading: false,
-    //     isError: false,
-    //   });
-    // }
   };
 
   React.useEffect(() => {
@@ -154,10 +138,11 @@ export function RecipeListPage() {
             /> */}
             <Button
               size={'lg'}
+              colorScheme="blue"
               m={'auto'}
               mr={0}
               onClick={onOpen}
-              updateData={updateData}
+              // updateData={updateData}
             >
               Nový recept
             </Button>

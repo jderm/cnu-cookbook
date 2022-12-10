@@ -17,7 +17,7 @@ export function App() {
           <Routes>
             <Route path="/" element={<RecipeListPage />} />
             <Route path="/recept/:slug" element={<RecipeDetailPage />} />
-            <Route path="/updaterecipe/:slug" element={<UpdateRecipePage />} />
+            <Route path="/recept/:slug/update" element={<UpdateRecipePage />} />
             <Route path="/api-test" element={<ApiTestPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

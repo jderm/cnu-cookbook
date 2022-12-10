@@ -13,6 +13,12 @@ import {
   Box,
   SimpleGrid,
   Stack,
+  UnorderedList,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
@@ -26,6 +32,7 @@ const DEFAULT_STATE = {
 export function RecipeDetailPage() {
   const { slug } = useParams();
   const [state, setState] = useState(DEFAULT_STATE);
+  const [servCount, setServCount] = useState(1);
 
   const onFetchError = (error) => {
     console.log(error);
@@ -43,6 +50,8 @@ export function RecipeDetailPage() {
       isLoading: false,
       isError: false,
     });
+    //PROBLÉM TŘEBA VYŘEŠIT
+    setServCount(data.servingCount ? data.servingCount : 1);
   };
 
   const fetchData = () => {
@@ -168,18 +177,18 @@ export function RecipeDetailPage() {
   //   // }
   // }
 
-  const formatTime = () => {
-    //let prepTime = '';
-    let hours = Math.floor(state.data.preparationTime / 60);
-    if (hours > 0) {
-      let minutes = state.data.preparationTime - 60 * hours;
-      let minutesText = minutes > 0 ? '& ' + minutes + 'min' : '';
-      return hours + 'h ' + minutesText;
-    }
-    // else {
-    //   return state.data.preparationTime + 'min';
-    // }
-  };
+  // const formatTime = () => {
+  //   //let prepTime = '';
+  //   let hours = Math.floor(state.data.preparationTime / 60);
+  //   if (hours > 0) {
+  //     let minutes = state.data.preparationTime - 60 * hours;
+  //     let minutesText = minutes > 0 ? '& ' + minutes + 'min' : '';
+  //     return hours + 'h ' + minutesText;
+  //   }
+  //   // else {
+  //   //   return state.data.preparationTime + 'min';
+  //   // }
+  // };
 
   return (
     <>
@@ -188,56 +197,98 @@ export function RecipeDetailPage() {
       {state.data ? (
         <Box m={10}>
           <Flex width="auto">
-            <Button m={'auto'} mr={0} size={'lg'}>
-              <Link to={`/updaterecipe/${slug}`}>Aktualizovat recept</Link>
+            <Button m={'auto'} mr={0} size={'lg'} colorScheme="blue">
+              <Link to={`/recept/${slug}/update/`}>Aktualizovat recept</Link>
             </Button>
           </Flex>
           <Heading mb={7}>{state.data.title}</Heading>
-          <SimpleGrid minChildWidth="400px" gap={2}>
-            <Box>
-              <Heading size={'md'}>Doba přípravy: </Heading>
-              <Text mb={5}>{state.data.preparationTime} min</Text>
+          <Flex>
+            <SimpleGrid columns={[1, 2]} gap={2}>
+              {/* <Flex> */}
+              <Box flex={'1 0 0%'} m={5}>
+                <Heading size={'md'}>Doba přípravy: </Heading>
+                <Text mb={5}>{state.data.preparationTime} min</Text>
+                <NumberInput
+                  min={1}
+                  placeholder="Množství"
+                  value={servCount}
+                  onChange={(e) => {
+                    setServCount(e);
+                  }}
+                >
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+                {state.data.ingredients.length > 0 ? (
+                  <>
+                    <Heading size={'md'}>Ingredience:</Heading>
+                    <UnorderedList listStyleType="none" margin={0}>
+                      {state.data.ingredients?.map((item) => (
+                        <ListItem
+                          backgroundColor={
+                            item.isGroup ? 'blackAlpha.200' : 'white'
+                          }
+                        >
+                          {isNaN(
+                            Math.round(
+                              item.amount *
+                                (servCount / state.data.servingCount),
+                            ) / 100,
+                          )
+                            ? ''
+                            : Math.round(
+                                item.amount *
+                                  (servCount / state.data.servingCount),
+                              ) / 100}
+                          {item.amountUnit} {item.name}
+                        </ListItem>
+                      ))}
+                    </UnorderedList>
+                  </>
+                ) : (
+                  <Text color={'red.600'} mb={5}>
+                    Žádné ingredience
+                  </Text>
+                )}
 
-              {state.data.ingredients.length > 0 ? (
-                <>
-                  <Heading size={'md'}>Ingredience:</Heading>
-                  <OrderedList mb={5}>
-                    {state.data.ingredients?.map((item) => (
-                      <ListItem>
-                        {item.amount}
-                        {item.amountUnit} {item.name}
-                      </ListItem>
-                    ))}
-                  </OrderedList>
-                </>
-              ) : (
-                <Text color={'red.600'} mb={5}>
-                  Žádné ingredience
-                </Text>
-              )}
+                {state.data.sideDish ? (
+                  <>
+                    <Heading size={'md'}>Přílohy:</Heading>
+                    <Text mb={5}>{state.data.sideDish}</Text>
+                  </>
+                ) : (
+                  <Text mb={5} color={'red.600'}>
+                    Žádné přílohy
+                  </Text>
+                )}
 
-              <Heading size={'md'}>Naposledy upraveno:</Heading>
-              <Text>{formatDate(state.data.lastModifiedDate)}</Text>
-            </Box>
-            <Box>
-              {state.data.directions ? (
-                <>
-                  <Heading size={'md'}>Postup:</Heading>
-                  {/* {state.data.directions.split('\n\n').map((line) => (
+                <Heading size={'md'}>Naposledy upraveno:</Heading>
+                <Text>{formatDate(state.data.lastModifiedDate)}</Text>
+              </Box>
+              <Box flex={'2 0 0%'} m={5}>
+                {state.data.directions ? (
+                  <>
+                    <Heading size={'md'}>Postup:</Heading>
+                    {/* {state.data.directions.split('\n\n').map((line) => (
                     <Text whiteSpace={'pre-line'} mb={5}>
                       {' '}
                       {line}
                     </Text>
                   ))} */}
-                  <Box ml={5}>
-                    <ReactMarkdown children={state.data.directions} />
-                  </Box>
-                </>
-              ) : (
-                <Text color={'red.600'}>Žádný postup</Text>
-              )}
-            </Box>
-          </SimpleGrid>
+                    <Box ml={5}>
+                      <ReactMarkdown children={state.data.directions} />
+                    </Box>
+                  </>
+                ) : (
+                  <Text color={'red.600'}>Žádný postup</Text>
+                )}
+              </Box>
+              {/* </Flex> */}
+            </SimpleGrid>
+          </Flex>
         </Box>
       ) : null}
     </>
