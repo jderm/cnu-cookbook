@@ -9,16 +9,11 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-//import '../css.css';
 import RecipeCard from '../components/RecipeCard';
 import { api } from '../api';
 import { Spinner } from '../components/Spinner';
 import { Error } from '../components/Error';
 import { NewRecipeModal } from '../components/NewRecipeModal';
-import { useSelector } from 'react-redux';
-import { selectData } from '../redux/dataReducer';
-import { useDispatch } from 'react-redux';
-import { onLoadData } from '../redux/dataReducer';
 
 const DEFAULT_STATE = {
   data: null,
@@ -32,9 +27,6 @@ export function RecipeListPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
-  const list = useSelector(selectData);
-  const dispatch = useDispatch();
-
   const onFetchError = (error) => {
     setState({
       data: null,
@@ -42,27 +34,25 @@ export function RecipeListPage() {
       isError: true,
     });
     toast({
-      title: `Error with deleting`,
+      title: `Vyskytla se chyba ` + error.response.status,
       position: 'top',
       isClosable: true,
       status: 'error',
       duration: 3000,
     });
-    console.log('Some error appeared', error.type);
+    console.log(error);
   };
 
   const onFetchSuccess = ({ data }) => {
-    //console.log('Fetch data', data);
     setState({
       data: data,
       isLoading: false,
       isError: false,
     });
-    dispatch(onLoadData(data));
-    //console.log(list);
   };
 
   const fetchData = () => {
+    document.title = 'Albertovy recepty';
     setState({
       data: null,
       isLoading: true,
@@ -71,46 +61,26 @@ export function RecipeListPage() {
     api.get('recipes').then(onFetchSuccess).catch(onFetchError);
   };
 
-  const updateData = ({ type, receptId, recipe }) => {
-    //console.log(type, receptId, recipe);
+  const updateData = ({ type, receptId }) => {
     switch (type) {
       case 'update':
         fetchData();
-
-        // const updatedData = state.data.filter(
-        //   (recept) => recept._id !== receptId,
-        // );
-        // setState({
-        //   data: updatedData,
-        //   isLoading: false,
-        //   isError: false,
-        // });
         break;
 
       case 'new':
         fetchData();
-        // console.log(recipe);
-        // console.log(recipe);
-        // const newRecipe = [...state.data, recipe];
-        // console.log(newRecipe);
-        // setState({
-        //   ...state,
-        //   data: {
-        //     ...state.data,
-        //     data: newRecipe,
-        //   },
-        // });
-        // console.log(state.data);
         break;
 
       case 'delete':
-        // fetchData();
         const newData = state.data.filter((recept) => recept._id !== receptId);
         setState({
           data: newData,
           isLoading: false,
           isError: false,
         });
+        break;
+
+      default:
         break;
     }
   };
@@ -128,21 +98,12 @@ export function RecipeListPage() {
       {state.data ? (
         <>
           <Flex width={'100%'} mb={5}>
-            {/* <Input
-              placeholder="Vyhledej recept"
-              value={search}
-              width={'100%'}
-              size={'lg'}
-              textAlign={'center'}
-              onChange={(e) => setSearch(e.target.value)}
-            /> */}
             <Button
               size={'lg'}
               colorScheme="blue"
               m={'auto'}
               mr={0}
               onClick={onOpen}
-              // updateData={updateData}
             >
               Nový recept
             </Button>

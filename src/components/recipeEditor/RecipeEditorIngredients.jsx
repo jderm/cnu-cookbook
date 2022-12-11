@@ -8,47 +8,31 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
-  SimpleGrid,
-  TableContainer,
-  Thead,
-  Td,
-  Tr,
-  Table,
-  Tbody,
-  Th,
   Box,
   IconButton,
   Button,
   Flex,
-  Textarea,
-  useToast,
-  InputGroup,
-  InputRightElement,
-  OrderedList,
   ListItem,
   UnorderedList,
+  Divider,
 } from '@chakra-ui/react';
 import { AiFillDelete } from 'react-icons/ai';
+import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+import { arrayMoveImmutable } from 'array-move';
 
 const DEFAULT_INGREDIENT = {
-  name: 'Název ingredience',
-  amount: 1,
+  name: '',
+  amount: '',
   amountUnit: '',
   isGroup: false,
 };
 
-export default function RecipeEditorIngredients({
-  state,
-  setState,
-  // deleteIngredient,
-  // newIngredientUpdate,
-  // addNewIngredient,
-  // newIngredient,
-}) {
+export default function RecipeEditorIngredients({ state, setState }) {
   const [ingredient, setIngredient] = React.useState(DEFAULT_INGREDIENT);
   const [groupName, setGroupName] = React.useState('');
 
-  function deleteIngredient(ingredientId) {
+  const deleteIngredient = (ingredientId) => {
+    console.log(ingredientId);
     const newIngredients = state.data.ingredients.filter(
       (ingredient) => ingredient._id !== ingredientId,
     );
@@ -59,9 +43,9 @@ export default function RecipeEditorIngredients({
         ingredients: newIngredients,
       },
     });
-  }
+  };
 
-  function addNewIngredient() {
+  const addNewIngredient = () => {
     const newIngredients = [...state.data.ingredients, ingredient];
     setState({
       ...state,
@@ -71,9 +55,9 @@ export default function RecipeEditorIngredients({
       },
     });
     setIngredient(DEFAULT_INGREDIENT);
-  }
+  };
 
-  function addNewGroup() {
+  const addNewGroup = () => {
     const newIngredients = [
       ...state.data.ingredients,
       { name: groupName, isGroup: true },
@@ -87,87 +71,87 @@ export default function RecipeEditorIngredients({
     });
     setIngredient(DEFAULT_INGREDIENT);
     setGroupName('');
-  }
+  };
 
-  function newIngredientUpdate(type, value) {
+  const newIngredientUpdate = (type, value) => {
     setIngredient({
       ...ingredient,
       [type]: value,
     });
-  }
-  console.log(state);
+  };
+
+  const SortableItem = SortableElement(({ value }) => (
+    <ListItem
+      className="ingrEditItem"
+      display={'flex'}
+      width={'100%'}
+      userSelect="none"
+      backgroundColor={value.isGroup ? 'blackAlpha.200' : 'white'}
+    >
+      <Text flex={'1 1 0%;'} ml={1} mr={1} alignSelf="center">
+        {value.amount}
+      </Text>
+      <Text flex={'1 1 0%;'} ml={1} mr={1} alignSelf="center">
+        {' '}
+        {value.amountUnit}
+      </Text>
+      <Text flex={'8 1 0%;'} ml={1} mr={1} alignSelf="center">
+        {value.name}
+      </Text>
+      <IconButton
+        colorScheme="red"
+        onClick={() => deleteIngredient(value._id)}
+        icon={<AiFillDelete />}
+      />
+    </ListItem>
+  ));
+
+  const SortableList = SortableContainer(({ items }) => {
+    return (
+      <UnorderedList
+        listStyleType={'none'}
+        maxHeight="350px"
+        overflowY={'auto'}
+        margin={0}
+        mb={5}
+      >
+        {items.map((value, index) => (
+          <>
+            <SortableItem key={value._id} index={index} value={value} />
+            <Divider />
+          </>
+        ))}
+      </UnorderedList>
+    );
+  });
+
+  const onSortEnd = ({ oldIndex, newIndex }) => {
+    setState({
+      ...state,
+      data: {
+        ...state.data,
+        ingredients: arrayMoveImmutable(
+          state.data.ingredients,
+          oldIndex,
+          newIndex,
+        ),
+      },
+    });
+  };
   return (
     <Box>
       <Heading size={'sm'} mb={3}>
         Ingredience:
       </Heading>
       {state.data.ingredients ? (
-        <UnorderedList
-          listStyleType={'none'}
-          maxHeight="350px"
-          overflowY={'auto'}
-          margin={0}
-          mb={5}
-        >
-          {state.data.ingredients.map((item) => (
-            <ListItem
-              mb={3}
-              display={'flex'}
-              width={'100%'}
-              backgroundColor={item.isGroup ? 'blackAlpha.200' : 'white'}
-            >
-              <Text flex={'1 1 0%;'} ml={1} mr={1} alignSelf="center">
-                {item.amount}
-              </Text>
-              <Text flex={'1 1 0%;'} ml={1} mr={1} alignSelf="center">
-                {' '}
-                {item.amountUnit}
-              </Text>
-              <Text flex={'8 1 0%;'} ml={1} mr={1} alignSelf="center">
-                {item.name}
-              </Text>
-              <IconButton
-                colorScheme="red"
-                onClick={() => deleteIngredient(item._id)}
-                icon={<AiFillDelete />}
-              />
-            </ListItem>
-          ))}
-        </UnorderedList>
-      ) : // <TableContainer overflowY={'auto'} maxHeight={'253px'} mb={5}>
-      //   <Table maxWidth={'inherit'}>
-      //     <Thead maxWidth={'inherit'}>
-      //       <Tr>
-      //         <Th>množství</Th>
-      //         <Th>název</Th>
-      //       </Tr>
-      //     </Thead>
-      //     <Tbody maxWidth={'inherit'}>
-      //       {state.data.ingredients.map((item) => (
-      //         <Tr>
-      //           <Td>
-      //             {item.amount} {item.amountUnit}
-      //           </Td>
-      //           <Td>{item.name}</Td>
-      //           <Td>
-      //             <IconButton
-      //               colorScheme="red"
-      //               onClick={() => deleteIngredient(item._id)}
-      //               icon={<AiFillDelete />}
-      //             />
-      //           </Td>
-      //         </Tr>
-      //       ))}
-      //     </Tbody>
-      //   </Table>
-      // </TableContainer>
-      null}
-      {/* <Heading size={'sm'}>Název:</Heading> */}
-      {/* <InputGroup> */}
+        <>
+          <SortableList items={state.data.ingredients} onSortEnd={onSortEnd} />
+        </>
+      ) : null}
       <Flex mb={2}>
         <Input
           placeholder="Název ingredience"
-          value={ingredient.name ? ingredient.name : 'Název ingredience'}
+          value={ingredient.name}
           onChange={(e) => {
             newIngredientUpdate('name', e.target.value);
           }}
@@ -178,23 +162,16 @@ export default function RecipeEditorIngredients({
           mt={0}
           onClick={addNewIngredient}
           colorScheme="blue"
+          isDisabled={ingredient.name === '' ? true : false}
         >
           Přidat
         </Button>
       </Flex>
-      {/* <InputRightElement> */}
-
-      {/* </InputRightElement>
-      </InputGroup> */}
       <Flex mb={2}>
-        {/* <Heading textAlign={'center'} size={'sm'}>
-          Množství:
-        </Heading> */}
-
         <NumberInput
-          min={1}
+          min={0}
           placeholder="Množství"
-          value={ingredient.amount ? ingredient.amount : 1}
+          value={ingredient.amount}
           onChange={(e) => {
             newIngredientUpdate('amount', e);
           }}
@@ -205,9 +182,6 @@ export default function RecipeEditorIngredients({
             <NumberDecrementStepper />
           </NumberInputStepper>
         </NumberInput>
-        {/* <Heading ml={7} size={'sm'}>
-          Jednotka:
-        </Heading> */}
         <Input
           placeholder="Jednotka"
           value={ingredient.amountUnit}
@@ -216,17 +190,6 @@ export default function RecipeEditorIngredients({
           }}
         />
       </Flex>
-      {/* <Box width={'100%'}>
-        <Button
-          ml={'auto'}
-          mr={'auto'}
-          mt={5}
-          onClick={addNewIngredient}
-          colorScheme="blue"
-        >
-          Přidat ingredienci
-        </Button>
-      </Box> */}
       <Flex mb={2}>
         <Input
           mb={2}
@@ -242,6 +205,7 @@ export default function RecipeEditorIngredients({
           mt={0}
           onClick={addNewGroup}
           colorScheme="blue"
+          isDisabled={groupName === '' ? true : false}
         >
           Přidat
         </Button>

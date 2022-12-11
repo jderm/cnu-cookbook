@@ -1,0 +1,30 @@
+ol {
+  list-style: none;
+  counter-reset: markdownListCounter;
+}
+ol li {
+  counter-increment: markdownListCounter;
+  margin-bottom: 20px;
+  padding-left: 3em;
+  position: relative;
+}
+
+.ingrEditItem:hover {
+  cursor: grab;
+}
+
+ol li::before {
+  content: counter(markdownListCounter);
+  left: 0px;
+  top: -0.25em;
+  display: flex;
+  -moz-box-align: center;
+  align-items: center;
+  color: rgb(255, 255, 255);
+  background-color: dodgerblue;
+  border-radius: 50%;
+  justify-content: center;
+  height: 2em;
+  position: absolute;
+  width: 2em;
+}

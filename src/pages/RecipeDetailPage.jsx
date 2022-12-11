@@ -8,17 +8,15 @@ import {
   Text,
   Flex,
   Heading,
-  OrderedList,
   ListItem,
   Box,
-  SimpleGrid,
-  Stack,
   UnorderedList,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  useToast,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
@@ -33,6 +31,7 @@ export function RecipeDetailPage() {
   const { slug } = useParams();
   const [state, setState] = useState(DEFAULT_STATE);
   const [servCount, setServCount] = useState(1);
+  const toast = useToast();
 
   const onFetchError = (error) => {
     console.log(error);
@@ -41,16 +40,22 @@ export function RecipeDetailPage() {
       isLoading: false,
       isError: true,
     });
+    toast({
+      title: `Vyskytla se chyba ` + error.response.status,
+      position: 'top',
+      isClosable: true,
+      status: 'error',
+      duration: 3000,
+    });
   };
 
   const onFetchSuccess = ({ data }) => {
-    console.log('Data ', data);
     setState({
       data,
       isLoading: false,
       isError: false,
     });
-    //PROBLÉM TŘEBA VYŘEŠIT
+    document.title = data.title + ' - Albertovy recepty';
     setServCount(data.servingCount ? data.servingCount : 1);
   };
 
@@ -75,7 +80,7 @@ export function RecipeDetailPage() {
     const date2 = date[0].split('-');
     let newDate = '';
     for (let a = 2; a >= 0; a--) {
-      if (a != 0) {
+      if (a !== 0) {
         newDate += date2[a] + '. ';
       } else {
         newDate += date2[a];
@@ -84,210 +89,128 @@ export function RecipeDetailPage() {
     return newDate;
   };
 
-  // function updateRecipe(type, value) {
-  //   {
-  //     value !== ''
-  //       ? setState({
-  //           ...state,
-  //           data: {
-  //             ...state.data,
-  //             [type]: value,
-  //           },
-  //         })
-  //       : setState(() => {
-  //           const copy = { ...state };
-  //           delete copy.data[type];
-  //           return copy;
-  //         });
-  //   }
-
-  //   // switch (type) {
-  //   //   case 'title':
-  //   //     setState({
-  //   //       ...state,
-  //   //       data: {
-  //   //         ...state.data,
-  //   //         title: value,
-  //   //         slug: CreateSlug(value),
-  //   //       },
-  //   //     });
-  //   //     break;
-
-  //   //   case 'preparationTime':
-  //   //     setState({
-  //   //       ...state,
-  //   //       data: {
-  //   //         ...state.data,
-  //   //         preparationTime: value,
-  //   //       },
-  //   //     });
-  //   //     break;
-
-  //   //   case 'sideDish':
-  //   //     setState({
-  //   //       ...state,
-  //   //       data: {
-  //   //         ...state.data,
-  //   //         sideDish: value,
-  //   //       },
-  //   //     });
-  //   //     break;
-
-  //   //   case 'servingCount':
-  //   //     setState({
-  //   //       ...state,
-  //   //       data: {
-  //   //         ...state.data,
-  //   //         servingCount: value,
-  //   //       },
-  //   //     });
-  //   //     break;
-
-  //   //   case 'directions':
-  //   //     {
-  //   //       // value !== ''
-  //   //       //   ? setState({
-  //   //       //       ...state,
-  //   //       //       data: {
-  //   //       //         ...state.data,
-  //   //       //         directions: value,
-  //   //       //       },
-  //   //       //     })
-  //   //       //   : setState({
-  //   //       //       ...state,
-  //   //       //       data: {
-  //   //       //         ...state.data,
-  //   //       //         directions: {delete state.data.directions},
-  //   //       //       },
-  //   //       //     });
-  //   //       setState(() => {
-  //   //         // 👇️ create copy of state object
-  //   //         let copy = { ...state };
-
-  //   //         // 👇️ remove salary key from object
-  //   //         delete copy.data['directions'];
-
-  //   //         return copy;
-  //   //       });
-  //   //     }
-  //   //     break;
-
-  //   //   default:
-  //   //     break;
-  //   // }
-  // }
-
-  // const formatTime = () => {
-  //   //let prepTime = '';
-  //   let hours = Math.floor(state.data.preparationTime / 60);
-  //   if (hours > 0) {
-  //     let minutes = state.data.preparationTime - 60 * hours;
-  //     let minutesText = minutes > 0 ? '& ' + minutes + 'min' : '';
-  //     return hours + 'h ' + minutesText;
-  //   }
-  //   // else {
-  //   //   return state.data.preparationTime + 'min';
-  //   // }
-  // };
+  const detailInfo = (item) => {
+    let text = '';
+    if (state.data.servingCount) {
+      if (item.amount) {
+        text +=
+          Math.abs(
+            item.amount *
+              (servCount /
+                (state.data.servingCount ? state.data.servingCount : 1)),
+          ) + ' ';
+        if (item.amountUnit) {
+          text += item.amountUnit + ' ';
+        } else {
+          text += ' ';
+        }
+      } else {
+        text += ' ';
+      }
+    } else {
+      if (item.amount) {
+        text += item.amount + ' ';
+        if (item.amountUnit) {
+          text += item.amountUnit + ' ';
+        } else {
+          text += ' ';
+        }
+      } else {
+        text += ' ';
+      }
+    }
+    text += item.name;
+    return text;
+  };
 
   return (
     <>
       {state.isLoading && <Spinner />}
       {state.isError && <Error errorMessage="Problém s načítáním dat" />}
       {state.data ? (
-        <Box m={10}>
+        <Box m={5}>
           <Flex width="auto">
             <Button m={'auto'} mr={0} size={'lg'} colorScheme="blue">
-              <Link to={`/recept/${slug}/update/`}>Aktualizovat recept</Link>
+              <Link to={`/recept/${slug}/update/`}>Upravit recept</Link>
             </Button>
           </Flex>
           <Heading mb={7}>{state.data.title}</Heading>
-          <Flex>
-            <SimpleGrid columns={[1, 2]} gap={2}>
-              {/* <Flex> */}
-              <Box flex={'1 0 0%'} m={5}>
-                <Heading size={'md'}>Doba přípravy: </Heading>
-                <Text mb={5}>{state.data.preparationTime} min</Text>
-                <NumberInput
-                  min={1}
-                  placeholder="Množství"
-                  value={servCount}
-                  onChange={(e) => {
-                    setServCount(e);
-                  }}
-                >
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
-                {state.data.ingredients.length > 0 ? (
-                  <>
-                    <Heading size={'md'}>Ingredience:</Heading>
-                    <UnorderedList listStyleType="none" margin={0}>
-                      {state.data.ingredients?.map((item) => (
-                        <ListItem
-                          backgroundColor={
-                            item.isGroup ? 'blackAlpha.200' : 'white'
-                          }
-                        >
-                          {isNaN(
-                            Math.round(
-                              item.amount *
-                                (servCount / state.data.servingCount),
-                            ) / 100,
-                          )
-                            ? ''
-                            : Math.round(
-                                item.amount *
-                                  (servCount / state.data.servingCount),
-                              ) / 100}
-                          {item.amountUnit} {item.name}
-                        </ListItem>
-                      ))}
-                    </UnorderedList>
-                  </>
-                ) : (
-                  <Text color={'red.600'} mb={5}>
-                    Žádné ingredience
-                  </Text>
-                )}
+          <Flex flexFlow={'row wrap'}>
+            <Box flex={'1 0 0%'} m={5}>
+              <Heading size={'md'}>Doba přípravy: </Heading>
+              <Text mb={5}>{state.data.preparationTime} min</Text>
+              {state.data.servingCount ? (
+                <>
+                  <Heading size={'md'} mb={1}>
+                    Počet porcí:
+                  </Heading>
+                  <NumberInput
+                    min={1}
+                    mb={5}
+                    placeholder="Množství"
+                    value={servCount}
+                    onChange={(e) => {
+                      setServCount(e);
+                    }}
+                  >
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                </>
+              ) : null}
+              {state.data.ingredients.length > 0 ? (
+                <>
+                  <Heading size={'md'}>Ingredience:</Heading>
+                  <UnorderedList listStyleType="none" margin={0} mb={5}>
+                    {state.data.ingredients?.map((item) => (
+                      <ListItem
+                        key={item._id}
+                        p={1}
+                        mb={3}
+                        backgroundColor={
+                          item.isGroup ? 'blackAlpha.200' : 'white'
+                        }
+                      >
+                        {detailInfo(item)}
+                      </ListItem>
+                    ))}
+                  </UnorderedList>
+                </>
+              ) : (
+                <Text color={'red.600'} mb={5}>
+                  Žádné ingredience
+                </Text>
+              )}
 
-                {state.data.sideDish ? (
-                  <>
-                    <Heading size={'md'}>Přílohy:</Heading>
-                    <Text mb={5}>{state.data.sideDish}</Text>
-                  </>
-                ) : (
-                  <Text mb={5} color={'red.600'}>
-                    Žádné přílohy
-                  </Text>
-                )}
+              {state.data.sideDish ? (
+                <>
+                  <Heading size={'md'}>Přílohy:</Heading>
+                  <Text mb={5}>{state.data.sideDish}</Text>
+                </>
+              ) : (
+                <Text mb={5} color={'red.600'}>
+                  Žádné přílohy
+                </Text>
+              )}
 
-                <Heading size={'md'}>Naposledy upraveno:</Heading>
-                <Text>{formatDate(state.data.lastModifiedDate)}</Text>
-              </Box>
-              <Box flex={'2 0 0%'} m={5}>
-                {state.data.directions ? (
-                  <>
-                    <Heading size={'md'}>Postup:</Heading>
-                    {/* {state.data.directions.split('\n\n').map((line) => (
-                    <Text whiteSpace={'pre-line'} mb={5}>
-                      {' '}
-                      {line}
-                    </Text>
-                  ))} */}
-                    <Box ml={5}>
-                      <ReactMarkdown children={state.data.directions} />
-                    </Box>
-                  </>
-                ) : (
-                  <Text color={'red.600'}>Žádný postup</Text>
-                )}
-              </Box>
-              {/* </Flex> */}
-            </SimpleGrid>
+              <Heading size={'md'}>Naposledy upraveno:</Heading>
+              <Text>{formatDate(state.data.lastModifiedDate)}</Text>
+            </Box>
+            <Box flex={'3 0 0%'} m={5}>
+              {state.data.directions ? (
+                <>
+                  <Heading size={'md'}>Postup:</Heading>
+                  <Box mt={5}>
+                    <ReactMarkdown children={state.data.directions} />
+                  </Box>
+                </>
+              ) : (
+                <Text color={'red.600'}>Žádný postup</Text>
+              )}
+            </Box>
           </Flex>
         </Box>
       ) : null}

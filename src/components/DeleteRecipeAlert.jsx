@@ -1,6 +1,4 @@
 import React from 'react';
-import { Button, useToast } from '@chakra-ui/react';
-
 import {
   AlertDialog,
   AlertDialogBody,
@@ -9,6 +7,8 @@ import {
   AlertDialogContent,
   AlertDialogOverlay,
   AlertDialogCloseButton,
+  Button,
+  useToast,
 } from '@chakra-ui/react';
 import { api } from '../api';
 
@@ -23,9 +23,9 @@ export function DeleteRecipeAlert({
   const toast = useToast();
 
   const onDeleteError = (error) => {
-    console.log('Some error appeared', error);
+    console.log(error);
     toast({
-      title: `Error with deleting`,
+      title: `Vyskytla se chyba ` + error.response.status,
       position: 'top',
       isClosable: true,
       status: 'error',
@@ -36,9 +36,8 @@ export function DeleteRecipeAlert({
   const onDeleteSuccess = () => {
     updateData({ type: 'delete', receptId: receptId });
     onClose();
-    console.log('Succesfully deleted');
     toast({
-      title: `Succesfully deleted`,
+      title: `Recept byl úspěšně smazán`,
       position: 'top',
       isClosable: true,
       status: 'success',
@@ -62,7 +61,6 @@ export function DeleteRecipeAlert({
         isCentered
       >
         <AlertDialogOverlay />
-
         <AlertDialogContent>
           <AlertDialogHeader>Smazat recept</AlertDialogHeader>
           <AlertDialogCloseButton />

@@ -1,22 +1,18 @@
 import {
   Card,
   CardFooter,
-  CardBody,
-  CardHeader,
   Image,
   Text,
   Stack,
   Box,
   Flex,
-  Button,
   useDisclosure,
   IconButton,
-  Heading,
+  LinkBox,
+  LinkOverlay,
 } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
 import { AiOutlineClockCircle, AiFillDelete } from 'react-icons/ai';
 import { DeleteRecipeAlert } from './DeleteRecipeAlert';
-import { LinkBox, LinkOverlay } from '@chakra-ui/react';
 
 export default function RecipeCard({
   item: { title, preparationTime, slug, _id, ingredients },
@@ -25,7 +21,6 @@ export default function RecipeCard({
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const formatTime = () => {
-    //let prepTime = '';
     let hours = Math.floor(preparationTime / 60);
     if (hours > 0) {
       let minutes = preparationTime - 60 * hours;
@@ -86,8 +81,6 @@ export default function RecipeCard({
         top={0}
         right={0}
         onClick={onOpen}
-        // m={'auto'}
-        // mr={0}
         icon={<AiFillDelete />}
       />
     </Card>

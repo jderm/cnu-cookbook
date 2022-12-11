@@ -1,29 +1,6 @@
 import React from 'react';
-import {
-  Input,
-  Text,
-  Heading,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  SimpleGrid,
-  TableContainer,
-  Thead,
-  Td,
-  Tr,
-  Table,
-  Tbody,
-  Th,
-  Box,
-  IconButton,
-  Button,
-  Flex,
-  Textarea,
-  useToast,
-} from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
+import { Heading, Box, Flex, Textarea } from '@chakra-ui/react';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 export default function RecipeEditorDirections({ state, updateRecipe }) {
   return (
@@ -38,12 +15,18 @@ export default function RecipeEditorDirections({ state, updateRecipe }) {
         }}
       />
       <Box textAlign={'right'}>
-        <a
-          color="blue"
-          href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet"
-        >
-          Návod na Markdown
-        </a>
+        <Flex>
+          <Flex ml={'auto'}>
+            <AiOutlineQuestionCircle style={{ height: 'inherit' }} />
+            <a
+              color="blue"
+              href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet"
+            >
+              Návod na Markdown
+            </a>
+            <AiOutlineQuestionCircle style={{ height: 'inherit' }} />
+          </Flex>
+        </Flex>
       </Box>
     </Box>
   );
